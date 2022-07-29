@@ -40,33 +40,10 @@
   color: #222;
 }
 
-.cts-head {
-  background-color: #fff;
-  padding: 30px;
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  width: 100%;
-}
-
-.connectButton {
-  border-radius: 16px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: .03em;
-  line-height: 1;
-  outline: 0;
-  height: 40px;
-  padding: 0 16px;
-  background-color: var(--red-button-bg-color);
-  color: var(--red-button-text-color);
-  line-height: 40px;
-  margin: 0 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
+.cts-head{
+  background-color:#ff;
+  padding:0px 30px;
+  width:100%;
 }
 
 [class*="ant-"] input::-ms-clear,
@@ -4765,6 +4742,7 @@ a.has-text-danger-light:hover {
 .is-align-items-center {
   align-items: center !important;
 }
+
 .is-align-items-start {
   align-items: start !important;
 }
@@ -5547,3 +5525,4 @@ strong {
   ;
   background: #fff;
 }
+
