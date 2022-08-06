@@ -4,17 +4,19 @@ import { useMetaMask, useConnectedMetaMask } from "metamask-react";
 import { useEffect, useRef, useState } from "react";
 import { computeHeadingLevel } from "@testing-library/react";
 const axios = require("axios").default;
-function ConnectedWallet({setEthereum}){
-  const {ethereum} = useConnectedMetaMask();
+function ConnectedWallet({setEthereum, setChainId}){
+  const {ethereum, chainId} = useConnectedMetaMask();
   useEffect(()=>{
     setEthereum(ethereum);
+    setChainId(chainId);
   })
   return null;
 }
 function App() {
-  const { status, connect, chainId, addChain, switchChain, account} = useMetaMask();
-
+  var { status, connect, addChain, switchChain, account} = useMetaMask();
+  const [disconnected, setDisconnected] = useState(false);
   const [ethereum, setEthereum] = useState(null);
+  const [chainId, setChainId] = useState(null);
   const refInputAmount = useRef(null);
   const refX = useRef(null);
   const [progressBarPercent, setProgressBarPercent] = useState(0);
@@ -24,11 +26,30 @@ function App() {
   const [bnbPrice, setBnbPrice] = useState(9999999999);
   const [data, setData] = useState({"date": localStorage.getItem("date") ?? "2030-01-01T00:00:00", bnbAmount: localStorage.getItem("bnbAmount") ?? "50", "title": localStorage.getItem("title") ?? "Title", "description": localStorage.getItem("description") ?? "Lorem Ipsum","imageUrl": localStorage.getItem("imageUrl") ?? "https://upload.wikimedia.org/wikipedia/commons/5/54/Q_magazine_logo.svg","website": localStorage.getItem("website") ?? "https://google.com", "twitterUrl" : localStorage.getItem("twitterUrl") ?? "https://twitter.com", "telegramUrl" : localStorage.getItem("telegramUrl") ?? "https://t.me", "mainStatusBar": localStorage.getItem("mainStatusBar") ?? "Sale Live", "minBuyUSDT": localStorage.getItem("minBuyUSDT") ?? 100,"maxBuyUSDT": localStorage.getItem("maxBuyUSDT") ?? 100000000, "progressBarSTART": localStorage.getItem("progressBarSTART") ?? 20, "progressBarEND": localStorage.getItem("progressBarEND") ?? 5000, "presaleStartTime": localStorage.getItem("presaleStartTime") ?? "2030.01.01 00.00.00", "privateSaleAddress": localStorage.getItem("privateSaleAddress") ?? "0x00000000000000000000", "softCap": localStorage.getItem("softCap") ?? 20, "hardCap": localStorage.getItem("hardCap") ?? 5000, "firstRelasePercent": localStorage.getItem("firstRelasePercent") ?? 95, "vestingPercent": localStorage.getItem("vestingPercent") ?? 5, "vestingEveryXday": localStorage.getItem("vestingEveryXday") ?? 1,"contributors": localStorage.getItem("contributors") ?? 1, "presaleStatus": localStorage.getItem("presaleStatus") ?? "In Progress"});
   const Completionist = () => <span>End!</span>;
-  const loadConfigFromPlainTextPage = async() => {
-
-  }
+  const addBSCNetwork = () => {
+    try {
+      addChain({
+        chainId: "0x38",
+        chainName: "Binance Smart Chain",
+        rpcUrls: ["https://bsc-dataseed.binance.org/"],
+        nativeCurrency: {
+          name: "Binance Coin",
+          symbol: "BNB",
+          decimals: 18,
+        },
+        blockExplorerUrls: ["https://bscscan.com"]
+      });
+    } catch (error) {
+      // switchChain("0x38");
+    };
+  };
   const funcConnect = async () => {
-    await connect();
+    setDisconnected(!disconnected);
+    if (status !== "connected") await connect();
+    else if (status === "connected") await ethereum.request({
+      method: "eth_requestAccounts",
+      params: [{eth_accounts: {}}]
+  });
   }
   const loopSyncBNBprice = async() => {
     while (true) {
@@ -39,7 +60,6 @@ function App() {
   const loopGetConfigData = async () => {
     while (true) {
       var tmpData = (await axios.get("https://raw.githubusercontent.com/ac2f/ac2f/main/test.json")).data;
-      console.log(tmpData);
       setData(tmpData);
       await new Promise(r => setTimeout(r, (60 * 1000)));
     }
@@ -80,9 +100,9 @@ function App() {
     loopGetConfigData();
   }, []);
   useEffect(() =>{
-    console.log(account, ethereum);
     if (account && ethereum) ethereum.request({method: "eth_getBalance", params: [account, "latest"]}).then(res => setCurrentBalance(parseInt(res, 16) * 0.000000000000000001));
-  }, [ethereum]);
+    if (chainId !== "0x38") addBSCNetwork();
+  }, [ethereum, chainId]);
   const renderer = ({ years, days, hours, minutes, seconds, completed }) => {
     if (completed) {
       // Render a completed state
@@ -122,9 +142,9 @@ function App() {
 
   return (
     <div>
-      {status === "connected" && <ConnectedWallet  setEthereum={setEthereum}/>}
+      {status === "connected" && <ConnectedWallet  setEthereum={setEthereum} setChainId={setChainId}/>}
       <div className="cts-head">
-        <div class="connectButton" onClick={funcConnect}>{status === "connected" ? account : "Connect"}</div>
+        <div class="connectButton" id={status === "connected" && !disconnected ? "connected": "_"} onClick={funcConnect}>{status === "connected" && !disconnected ? account : "Connect"}</div>
       </div>
       <div className="cts-midle" style={{ height: "100%" }}>
         <div className="columns ">
@@ -274,9 +294,7 @@ function App() {
                         </td>
                       </tr>
                       <tr>
-                        <td onClick={() => {
-                          console.log("YUSUF ANANIK ")
-                        }}>Soft Cap</td>
+                        <td>Soft Cap</td>
                         <td className="has-text-right">{data.softCap} BNB</td>
                       </tr>
                       <tr>

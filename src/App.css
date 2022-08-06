@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+.connectButton{
+  transition: 0.3s;
+}
+#connected {
+  background-color: rgb(234, 253, 241);
+  color: rgb(89, 249, 146);
+}
