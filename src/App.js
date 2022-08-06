@@ -2,6 +2,7 @@ import "./App.css";
 import Countdown from "react-countdown";
 import { useMetaMask, useConnectedMetaMask } from "metamask-react";
 import { useEffect, useRef, useState } from "react";
+import { computeHeadingLevel } from "@testing-library/react";
 const axios = require("axios").default;
 function ConnectedWallet({setEthereum}){
   const {ethereum} = useConnectedMetaMask();
@@ -23,7 +24,6 @@ function App() {
   const [bnbPrice, setBnbPrice] = useState(9999999999);
   const [data, setData] = useState({"date": localStorage.getItem("date") ?? "2030-01-01T00:00:00", bnbAmount: localStorage.getItem("bnbAmount") ?? "50", "title": localStorage.getItem("title") ?? "Title", "description": localStorage.getItem("description") ?? "Lorem Ipsum","imageUrl": localStorage.getItem("imageUrl") ?? "https://upload.wikimedia.org/wikipedia/commons/5/54/Q_magazine_logo.svg","website": localStorage.getItem("website") ?? "https://google.com", "twitterUrl" : localStorage.getItem("twitterUrl") ?? "https://twitter.com", "telegramUrl" : localStorage.getItem("telegramUrl") ?? "https://t.me", "mainStatusBar": localStorage.getItem("mainStatusBar") ?? "Sale Live", "minBuyUSDT": localStorage.getItem("minBuyUSDT") ?? 100,"maxBuyUSDT": localStorage.getItem("maxBuyUSDT") ?? 100000000, "progressBarSTART": localStorage.getItem("progressBarSTART") ?? 20, "progressBarEND": localStorage.getItem("progressBarEND") ?? 5000, "presaleStartTime": localStorage.getItem("presaleStartTime") ?? "2030.01.01 00.00.00", "privateSaleAddress": localStorage.getItem("privateSaleAddress") ?? "0x00000000000000000000", "softCap": localStorage.getItem("softCap") ?? 20, "hardCap": localStorage.getItem("hardCap") ?? 5000, "firstRelasePercent": localStorage.getItem("firstRelasePercent") ?? 95, "vestingPercent": localStorage.getItem("vestingPercent") ?? 5, "vestingEveryXday": localStorage.getItem("vestingEveryXday") ?? 1,"contributors": localStorage.getItem("contributors") ?? 1, "presaleStatus": localStorage.getItem("presaleStatus") ?? "In Progress"});
   const Completionist = () => <span>End!</span>;
-
   const loadConfigFromPlainTextPage = async() => {
 
   }
@@ -274,7 +274,9 @@ function App() {
                         </td>
                       </tr>
                       <tr>
-                        <td>Soft Cap</td>
+                        <td onClick={() => {
+                          console.log("YUSUF ANANIK ")
+                        }}>Soft Cap</td>
                         <td className="has-text-right">{data.softCap} BNB</td>
                       </tr>
                       <tr>
