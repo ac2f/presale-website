@@ -24,7 +24,7 @@ function App() {
   const [minBuy, setMinBuy] = useState(1);
   const [maxBuy, setMaxBuy] = useState(9999999999);
   const [bnbPrice, setBnbPrice] = useState(9999999999);
-  const [data, setData] = useState({"date": localStorage.getItem("date") ?? "2030-01-01T00:00:00", bnbAmount: localStorage.getItem("bnbAmount") ?? "50", "title": localStorage.getItem("title") ?? "Title", "description": localStorage.getItem("description") ?? "Lorem Ipsum","imageUrl": localStorage.getItem("imageUrl") ?? "https://upload.wikimedia.org/wikipedia/commons/5/54/Q_magazine_logo.svg","website": localStorage.getItem("website") ?? "https://google.com", "twitterUrl" : localStorage.getItem("twitterUrl") ?? "https://twitter.com", "telegramUrl" : localStorage.getItem("telegramUrl") ?? "https://t.me", "mainStatusBar": localStorage.getItem("mainStatusBar") ?? "Sale Live", "minBuyUSDT": localStorage.getItem("minBuyUSDT") ?? 100,"maxBuyUSDT": localStorage.getItem("maxBuyUSDT") ?? 100000000, "progressBarSTART": localStorage.getItem("progressBarSTART") ?? 20, "progressBarEND": localStorage.getItem("progressBarEND") ?? 5000, "presaleStartTime": localStorage.getItem("presaleStartTime") ?? "2030.01.01 00.00.00", "privateSaleAddress": localStorage.getItem("privateSaleAddress") ?? "0x00000000000000000000", "softCap": localStorage.getItem("softCap") ?? 20, "hardCap": localStorage.getItem("hardCap") ?? 5000, "firstRelasePercent": localStorage.getItem("firstRelasePercent") ?? 95, "vestingPercent": localStorage.getItem("vestingPercent") ?? 5, "vestingEveryXday": localStorage.getItem("vestingEveryXday") ?? 1,"contributors": localStorage.getItem("contributors") ?? 1, "presaleStatus": localStorage.getItem("presaleStatus") ?? "In Progress"});
+  const [data, setData] = useState({"bnbAmount": localStorage.getItem("bnbAmount") ?? "50", "title": localStorage.getItem("title") ?? "Title", "description": localStorage.getItem("description") ?? "Lorem Ipsum","imageUrl": localStorage.getItem("imageUrl") ?? "https://upload.wikimedia.org/wikipedia/commons/5/54/Q_magazine_logo.svg","website": localStorage.getItem("website") ?? "https://google.com", "twitterUrl" : localStorage.getItem("twitterUrl") ?? "https://twitter.com", "telegramUrl" : localStorage.getItem("telegramUrl") ?? "https://t.me", "mainStatusBar": localStorage.getItem("mainStatusBar") ?? "Sale Live", "minBuyUSDT": localStorage.getItem("minBuyUSDT") ?? 100,"maxBuyUSDT": localStorage.getItem("maxBuyUSDT") ?? 1000000, "presaleStartTime": localStorage.getItem("presaleStartTime") ?? "2030.01.01 00.00.00", "presaleEndTime": localStorage.getItem("presaleEndTime") ?? "2030-01-01T00:00:00", "privateSaleAddress": localStorage.getItem("privateSaleAddress") ?? "0x00000000000000000000", "softCap": localStorage.getItem("softCap") ?? 20, "hardCap": localStorage.getItem("hardCap") ?? 5000, "firstRelasePercent": localStorage.getItem("firstRelasePercent") ?? 95, "vestingPercent": localStorage.getItem("vestingPercent") ?? 5, "vestingEveryXday": localStorage.getItem("vestingEveryXday") ?? 1,"contributors": localStorage.getItem("contributors") ?? 1, "presaleStatus": localStorage.getItem("presaleStatus") ?? "In Progress"});
   const Completionist = () => <span>End!</span>;
   const addBSCNetwork = () => {
     try {
@@ -54,21 +54,18 @@ function App() {
   const loopSyncBNBprice = async() => {
     while (true) {
       setBnbPrice((await axios.get("https://www.binance.com/bapi/asset/v2/public/asset-service/product/get-product-by-symbol?symbol=BNBUSDT")).data.data.c);
-      await new Promise(r => setTimeout(r, (60 * 1000)));
+      await new Promise(r => setTimeout(r, (30 * 1000)));
     }
   }
   const loopGetConfigData = async () => {
     while (true) {
-      var tmpData = (await axios.get("https://raw.githubusercontent.com/ac2f/ac2f/main/test.json")).data;
-      setData(tmpData);
-      await new Promise(r => setTimeout(r, (60 * 1000)));
+      setData((await axios.get("https://raw.githubusercontent.com/ac2f/ac2f/main/test.json")).data);
+      await new Promise(r => setTimeout(r, (10 * 1000)));
     }
   }
   useEffect(() => {
-    setMinBuy((1 / bnbPrice * data.minBuyUSDT).toString().slice(0, 8));
-    setMaxBuy((1 / bnbPrice * data.maxBuyUSDT).toString().slice(0, 8));
-    setProgressBarPercent(data.bnbAmount / data.progressBarEND * 100);
-    localStorage.setItem("date", data.date);
+    console.log(bnbPrice, data.maxBuyUSDT, 1 / bnbPrice * data.maxBuyUSDT, 99999334);
+    setProgressBarPercent(data.bnbAmount / data.hardCap * 100);
     localStorage.setItem("bnbAmount", data.bnbAmount);
     localStorage.setItem("title", data.title);
     localStorage.setItem("description", data.description);
@@ -79,9 +76,8 @@ function App() {
     localStorage.setItem("mainStatusBar", data.mainStatusBar);
     localStorage.setItem("minBuyUSDT", data.minBuyUSDT);
     localStorage.setItem("maxBuyUSDT", data.maxBuyUSDT);
-    localStorage.setItem("progressBarSTART", data.progressBarSTART);
-    localStorage.setItem("progressBarEND", data.progressBarEND);
     localStorage.setItem("presaleStartTime", data.presaleStartTime);
+    localStorage.setItem("presaleEndTime", data.presaleEndTime);
     localStorage.setItem("privateSaleAddress", data.privateSaleAddress);
     localStorage.setItem("softCap", data.softCap);
     localStorage.setItem("hardCap", data.hardCap);
@@ -92,7 +88,8 @@ function App() {
     localStorage.setItem("presaleStatus", data.presaleStatus);
   }, [data]);
   useEffect(() =>{
-    setMinBuy((1 / bnbPrice * 100).toString().slice(0, 8));
+    setMinBuy((1 / bnbPrice * data.minBuyUSDT).toString().slice(0, 8));
+    setMaxBuy((1 / bnbPrice * data.maxBuyUSDT).toString().slice(0, 8));
   }, [bnbPrice]);
   useEffect(()=>{
     funcConnect();
@@ -310,7 +307,7 @@ function App() {
                       <tr>
                         <td>Private Sale End Time</td>
                         <td className="has-text-right">
-                          {data.date.replace("T", " ")} (UTC)
+                          {data.presaleEndTime.replace("T", " ")} (UTC)
                         </td>
                       </tr>
                       <tr>
@@ -348,7 +345,7 @@ function App() {
                     <p className="mb-2">Private Sale Ends In</p>
                     <div className="has-text-centered">
                       <Countdown
-                        date={data.date}
+                        date={data.presaleEndTime}
                         renderer={renderer}
                       />
                     </div>
@@ -369,9 +366,9 @@ function App() {
                       </div>
                     </div>
                     <div className="is-flex is-align-items-center is-size-7">
-                      <div className="is-flex-grow-1">{data.progressBarSTART} BNB</div>
+                      <div className="is-flex-grow-1">{data.softCap} BNB</div>
                       <div className="is-flex-grow-1 has-text-right" id="r">
-                        {data.progressBarEND} BNB
+                        {data.hardCap} BNB
                       </div>
                     </div>
                   </div>
