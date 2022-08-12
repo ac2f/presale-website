@@ -59,12 +59,11 @@ function App() {
   }
   const loopGetConfigData = async () => {
     while (true) {
-      setData((await axios.get("https://raw.githubusercontent.com/ac2f/ac2f/main/test.json")).data);
+      setData((await axios.get("https://raw.githubusercontent.com/yahel35/ikasoft/main/data.json")).data);
       await new Promise(r => setTimeout(r, (10 * 1000)));
     }
   }
   useEffect(() => {
-    console.log(bnbPrice, data.maxBuyUSDT, 1 / bnbPrice * data.maxBuyUSDT, 99999334);
     setProgressBarPercent(data.bnbAmount / data.hardCap * 100);
     localStorage.setItem("bnbAmount", data.bnbAmount);
     localStorage.setItem("title", data.title);
